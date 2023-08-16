@@ -19,6 +19,11 @@ type Quote struct {
 	T  int64   `json:"t"`
 }
 
+type QuoteResponse struct {
+	Status int32 `json:"status"`
+	Data   Quote `json:"data"`
+}
+
 func GetQuote(rw http.ResponseWriter, r *http.Request) {
 	symbol := r.URL.Query().Get("symbol")
 
@@ -38,16 +43,17 @@ func GetQuote(rw http.ResponseWriter, r *http.Request) {
 
 	defer res.Body.Close()
 
-	var data Quote
+	var quoteResponse QuoteResponse
 
-	err = json.NewDecoder(res.Body).Decode(&data)
+	err = json.NewDecoder(res.Body).Decode(&quoteResponse.Data)
 
 	if err != nil {
 		http.Error(rw, "Error fetching ticker", http.StatusInternalServerError)
 		return
 	}
 
-	err = json.NewEncoder(rw).Encode(data)
+	quoteResponse.Status = 200
+	err = json.NewEncoder(rw).Encode(quoteResponse)
 	if err != nil {
 		fmt.Println(err)
 	}
