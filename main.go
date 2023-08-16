@@ -44,6 +44,7 @@ func main() {
 	// Router setup
 	sm := chi.NewRouter()
 	sm.Use(middleware.Logger)
+	sm.Get("/", handlers.HealthCheck)
 	sm.Get("/search", func(rw http.ResponseWriter, request *http.Request) {
 		handlers.Search(rw, request, dbpool)
 	})
