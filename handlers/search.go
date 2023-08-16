@@ -29,7 +29,7 @@ func Search(rw http.ResponseWriter, req *http.Request, pool *pgxpool.Pool) {
 	rows, err := pool.Query(ctx, `
         SELECT *
         FROM tickers
-        WHERE description LIKE $1 || '%'
+        WHERE LOWER(description) LIKE $1 || '%'
         LIMIT 10
     `, name)
 	defer rows.Close()

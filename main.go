@@ -47,6 +47,7 @@ func main() {
 	sm.Get("/search", func(rw http.ResponseWriter, request *http.Request) {
 		handlers.Search(rw, request, dbpool)
 	})
+	sm.Get("/stock/quote", handlers.GetQuote)
 
 	// server opts
 	server := http.Server{
