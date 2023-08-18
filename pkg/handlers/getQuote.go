@@ -24,6 +24,10 @@ type QuoteResponse struct {
 	Data   Quote `json:"data"`
 }
 
+// Returns a quote for the given symbol
+// Expects query parameter 'symbol'
+//
+// Ex. .../stock/quote?symbol=TSLA
 func GetQuote(rw http.ResponseWriter, r *http.Request) {
 	symbol := r.URL.Query().Get("symbol")
 
@@ -33,14 +37,15 @@ func GetQuote(rw http.ResponseWriter, r *http.Request) {
 		log.Fatal("FINNHUB_KEY is undefined")
 	}
 
+	// insert api key and symbol to external api url
 	url := fmt.Sprintf("https://finnhub.io/api/v1/quote?symbol=%s&token=%s", symbol, key)
 
+	// make GET request to external api
 	res, err := http.Get(url)
 	if err != nil {
 		http.Error(rw, "Error fetching ticker", http.StatusInternalServerError)
 		return
 	}
-
 	defer res.Body.Close()
 
 	var quoteResponse QuoteResponse
@@ -52,7 +57,9 @@ func GetQuote(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// return json
 	quoteResponse.Status = 200
+	rw.Header().Add("Content-Type", "application/json")
 	err = json.NewEncoder(rw).Encode(quoteResponse)
 	if err != nil {
 		fmt.Println(err)

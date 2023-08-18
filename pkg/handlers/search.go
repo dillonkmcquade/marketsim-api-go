@@ -25,20 +25,26 @@ func Search(rw http.ResponseWriter, req *http.Request, pool *pgxpool.Pool) {
 		http.Error(rw, "No search query given", http.StatusBadRequest)
 		return
 	}
+
 	ctx := req.Context()
+
 	rows, err := pool.Query(ctx, `
         SELECT *
         FROM tickers
         WHERE LOWER(description) LIKE $1 || '%'
         LIMIT 10
     `, name)
+
 	defer rows.Close()
+
 	if err != nil {
 		http.Error(rw, "Error retrieving resource from database", http.StatusInternalServerError)
 		fmt.Println(err)
 		return
 	}
+
 	var results []Ticker
+
 	for rows.Next() {
 		var ticker Ticker
 		if err = rows.Scan(&ticker.Symbol, &ticker.Description); err != nil {
@@ -46,16 +52,18 @@ func Search(rw http.ResponseWriter, req *http.Request, pool *pgxpool.Pool) {
 		}
 		results = append(results, ticker)
 	}
+
 	if err = rows.Err(); err != nil {
 		log.Println(err)
 	}
+
 	if len(results) == 0 {
 		http.Error(rw, "No results", http.StatusBadRequest)
 		return
 	}
 
+	rw.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(rw)
-
 	err = encoder.Encode(SearchResponse{Data: results, Status: 200})
 	if err != nil {
 		log.Println(err)

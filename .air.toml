@@ -1,22 +1,22 @@
 root = "."
 testdata_dir = "testdata"
-tmp_dir = "tmp"
+tmp_dir = "bin"
 
 [build]
   args_bin = []
-  bin = "./tmp/main"
-  cmd = "go build -o ./tmp/main ."
-  delay = 0
-  exclude_dir = ["assets", "tmp", "vendor", "testdata"]
+  bin = "./bin/main"
+  cmd = "go build -o ./bin/server ./cmd/server/server.go"
+  delay = 1
+  exclude_dir = ["assets", "bin", "vendor", "testdata"]
   exclude_file = []
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
-  include_dir = ["handlers", "."]
-  include_ext = ["go"]
-  include_file = ["main.go"]
-  kill_delay = 10 
+  include_dir = []
+  include_ext = ["go", "env", "toml"]
+  include_file = []
+  kill_delay = "10s" 
   log = "build-errors.log"
   poll = false
   poll_interval = 0
@@ -37,7 +37,7 @@ tmp_dir = "tmp"
   time = false
 
 [misc]
-  clean_on_exit = true
+  clean_on_exit = false
 
 [screen]
   clear_on_rebuild = false
