@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"goServer/pkg/handlers"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/dillonkmcquade/goServer/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -29,7 +30,7 @@ func connectToDatabase(database_uri string, l *log.Logger) *pgxpool.Pool {
 
 func main() {
 	// logger
-	l := log.New(os.Stdout, "Api", log.LstdFlags)
+	l := log.New(os.Stdout, "", log.LstdFlags)
 
 	// env
 	err := godotenv.Load(".env")
@@ -46,6 +47,7 @@ func main() {
 	// Router setup
 	sm := chi.NewRouter()
 	sm.Use(middleware.Logger)
+	sm.Use(middleware.Recoverer)
 	sm.Get("/", handlers.HealthCheck)
 	sm.Get("/search", func(rw http.ResponseWriter, request *http.Request) {
 		handlers.Search(rw, request, dbpool)
@@ -72,6 +74,7 @@ func main() {
 			l.Fatal(err)
 		}
 	}()
+
 	// Notify on Interrupt/kill
 	sigChan := make(chan os.Signal)
 	signal.Notify(sigChan, os.Interrupt)
