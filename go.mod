@@ -1,4 +1,4 @@
-module github.com/dillonkmcquade/goServer
+module github.com/dillonkmcquade/marketsim-api-go
 
 go 1.21
 
